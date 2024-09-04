@@ -44,7 +44,7 @@ jobs:
       
       - name: 'Deploy Image'
         run: |
-          gcloud run deploy users-development --image ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --region us-east4 --port 8081 --revision-suffix ${{ github.ref_name }} --no-traffic
+          gcloud run deploy ${{ secrets.SERVICE_NAME }} --image ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --region us-east4 --port 8080 --revision-suffix ${{ github.ref_name }} --no-traffic
 
       - name: Notify Google Chat
         if: ${{ always() }}
