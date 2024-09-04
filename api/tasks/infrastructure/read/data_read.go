@@ -44,7 +44,6 @@ func (th *TaskHandler) ReadData(c *gin.Context) {
 		}
 		// If tasks are retrieved successfully, respond with the tasks
 		tasks_response_infrastructure.CreateReadResponse(c, tasks)
-		break
 	case *mongo.Database:
 		// If `db` is of type *mongo.Database (MongoDB database), get all tasks from the MongoDB database
 		tasks, err := tasks_read_db_infrastructure.GetAllTaskMongo(db)
@@ -55,10 +54,8 @@ func (th *TaskHandler) ReadData(c *gin.Context) {
 		}
 		// If tasks are retrieved successfully, respond with the tasks
 		tasks_response_infrastructure.CreateReadResponse(c, tasks)
-		break
 	default:
 		// If `db` is not of a compatible type, log a warning message
 		logs.Info_Logger.Println("No support for this database")
-		break
 	}
 }

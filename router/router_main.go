@@ -1,6 +1,7 @@
 package router
 
 import (
+	"go-api/logs"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -38,7 +39,10 @@ func (r *Routes) CreateRoutes(db interface{}) {
 
 // Run starts the HTTP server on port 8080 using the configured router.
 func (r *Routes) Run() {
-	r.Routes.Run(":8080")
+	err := r.Routes.Run(":8080")
+	if err != nil {
+		logs.Warning_Logger.Println("Failed to start server")
+	}
 }
 
 // Print is a handler for the root route that responds with a JSON message.

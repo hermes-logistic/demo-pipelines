@@ -1,7 +1,7 @@
 package router
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -35,7 +35,7 @@ func TestPrintHandler(t *testing.T) {
 	// Check the response body
 	expected := `{"message":"Welcome to my API with Golang"}`
 
-	responseData, _ := ioutil.ReadAll(w.Body)
+	responseData, _ := io.ReadAll(w.Body)
 
 	assert.Equal(t, expected, string(responseData))
 	assert.Equal(t, http.StatusOK, w.Code)
