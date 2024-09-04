@@ -34,6 +34,7 @@ jobs:
       - name: 'Create DB'
         run: |
           gcloud sql databases create ${{ github.event.pull_request.number }} --instance=reviwer-db
+        continue-on-error: true
 
       - name: 'Build Image'
         run: |
