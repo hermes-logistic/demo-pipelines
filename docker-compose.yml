@@ -1,0 +1,74 @@
+version: '3'
+
+services:
+  # PostgreSQL for production
+  postgres:
+    image: postgres:14
+    container_name: postgres-db
+    ports:
+      - 5434:5434  # Expose container's port 5434 to host
+    restart: always
+    environment:
+      - POSTGRES_DB=${DB_NAME}  # Set production database name
+      - POSTGRES_USER=${USER_DB}  # Set production database user
+      - POSTGRES_PASSWORD=${PASSWORD}  # Set production database password
+    networks:
+      - api-postgres
+    volumes:
+      - postgres_local_data:/var/lib/postgresql/data:Z  # Mount volume for persistent data
+
+  # PostgreSQL for testing
+  test-postgres:
+    image: postgres:14
+    container_name: test_db
+    ports:
+      - 5433:5433  # Expose container's port 5433 to host
+    restart: always
+    environment:
+      - POSTGRES_DB=${TEST_DB_NAME}  # Set test database name
+      - POSTGRES_USER=${TEST_USER_DB}  # Set test database user
+      - POSTGRES_PASSWORD=${TEST_PASSWORD}  # Set test database password
+    networks:
+      - api-postgres
+    volumes:
+      - postgres_local_data_test:/var/lib/postgresql/data:Z  # Mount volume for test data
+
+  # MongoDB
+  mongo-db:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"  # Expose container's port 27017 to host
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}  # Set MongoDB root username
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}  # Set MongoDB root password
+    volumes:
+      - mongodb_data:/data/db  # Mount volume for MongoDB data
+    networks:
+      - api-postgres
+
+  # Go API
+  go-api:
+    container_name: go-api
+    build: 
+      context: ./  # Path to Docker build context
+      dockerfile: Dockerfile  # Dockerfile to build
+    environment:
+      - DB_STRING=${DB_STRING}  # Connection string for production PostgreSQL
+      - context=${CONTEXT}  # Set database context
+    restart: always
+    ports:
+      - 8080:8080  # Expose container's port 8080 to host
+    depends_on:
+      - postgres  # Depend on the PostgreSQL service
+    networks:
+      - api-postgres  # Use the same network as other services
+
+networks:
+  api-postgres:  # Define a custom bridge network for the services to communicate
+    driver: bridge
+
+volumes:
+  postgres_local_data: {}  # Volume for PostgreSQL production data
+  postgres_local_data_test: {}  # Volume for PostgreSQL test data
+  mongodb_data: {}  # Volume for MongoDB data
