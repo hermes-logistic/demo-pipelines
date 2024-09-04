@@ -96,8 +96,9 @@ jobs:
 
       - name: Run load tests
         run: |
-          docker pull ddosify/ddosify
-          docker run -i --rm ddosify/ddosify ddosify -config ddosify-data.json
+          wget https://github.com/ddosify/ddosify/releases/download/v1.0.6/ddosify_amd64.deb
+          dpkg -i ddosify_amd64.deb
+          ddosify -config ddosify-data.json
 
       - name: Notify Google Chat
         if: ${{ always() }}
