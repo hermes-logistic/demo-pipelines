@@ -55,7 +55,7 @@ jobs:
           SERVICE_URL=$(gcloud run services describe reviewer-${{ github.event.pull_request.number }} --region us-east4 --format "value(status.url)")
           echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
           echo "::set-output name=service_url::$SERVICE_URL"
-          echo "SERVICE_URL=$SERVICE_URL" > url.txt
+          echo "$SERVICE_URL" > url.txt
 
       - name: Upload the variable file
         uses: actions/upload-artifact@v3
