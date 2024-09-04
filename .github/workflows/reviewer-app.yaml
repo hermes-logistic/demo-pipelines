@@ -31,6 +31,11 @@ jobs:
         with:
           version: '>= 363.0.0'
 
+      - name: 'Create DB'
+        run: |
+          gcloud sql databases create ${{ github.event.pull_request.number }} --instance=reviwer-db
+        continue-on-error: true
+
       - name: 'Build Image'
         run: |
           gcloud auth configure-docker us-east4-docker.pkg.dev
@@ -42,14 +47,21 @@ jobs:
       
       - name: 'Deploy Image'
         run: |
-          gcloud run deploy service-${{ github.event.pull_request.number }} --image ${{ secrets.CLOUD_REGISTRY }}:test --region us-east4 --port 8081 --allow-unauthenticated 
+          gcloud run deploy reviewer-${{ github.event.pull_request.number }} --image ${{ secrets.CLOUD_REGISTRY }}:test --region us-east4 --port 8080 --allow-unauthenticated --set-env-vars context=postgres,DB_STRING="host=${{ secrets.DB_HOST }} user=postgres password=${{ secrets.DB_PASSWORD }} dbname=${{ github.event.pull_request.head.ref }} port=5432 sslmode=disable" --vpc-connector vpc-connector-serverless
 
       - name: Set SERVICE_URL environment variable
         id: set_service_url
         run: |
-          SERVICE_URL=$(gcloud run services describe service-${{ github.event.pull_request.number }} --region us-east4 --format "value(status.url)")
+          SERVICE_URL=$(gcloud run services describe reviewer-${{ github.event.pull_request.number }} --region us-east4 --format "value(status.url)")
           echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
           echo "::set-output name=service_url::$SERVICE_URL"
+          echo "$SERVICE_URL" > url.txt
+
+      - name: Upload the variable file
+        uses: actions/upload-artifact@v3
+        with:
+          name: url-file
+          path: url.txt
 
       - name: Notify Google Chat
         if: ${{ always() }}
@@ -60,6 +72,43 @@ jobs:
           title: ${{ github.workflow }}
           subtitle: ${{ github.event.pull_request.head.ref }}
           additionalSections: '[{"header": "Reviewer App Access", "collapsible": true, "widgets": [{"decoratedText": {"startIcon": {"knownIcon": "STAR"},"text": "${{ steps.set_service_url.outputs.service_url }}" }}] }]'
+
+  load-testing:
+    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+    needs: create-cr
+    runs-on: ubuntu-latest
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v2
+
+      - name: Download the variable file
+        uses: actions/download-artifact@v3
+        with:
+          name: url-file
+      
+      - name: Read variable from file
+        run: |
+          URL=$(cat url.txt)
+          echo "URL=${URL}" >> $GITHUB_ENV
+      
+      - name: Update ddosify json
+        run: |
+          sed -i.bak "s|URL|$URL|g" ddosify-data.json
+
+      - name: Run load tests
+        run: |
+          wget https://github.com/ddosify/ddosify/releases/download/v1.0.6/ddosify_amd64.deb
+          sudo dpkg -i ddosify_amd64.deb
+          ddosify -config ddosify-data.json
+
+      - name: Notify Google Chat
+        if: ${{ always() }}
+        uses: SimonScholz/google-chat-action@main
+        with:
+          webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
+          jobStatus: ${{ job.status }}
+          title: ${{ github.workflow }}
+          subtitle: ${{ github.event.pull_request.head.ref }}
 
   delete-cr:
     if: github.event.action == 'closed'
@@ -83,7 +132,8 @@ jobs:
       
       - name: 'Clean All'
         run: |
-          gcloud run services delete service-${{ github.event.pull_request.number }} --region us-east4 --quiet
+          gcloud run services delete reviewer-${{ github.event.pull_request.number }} --region us-east4 --quiet
+          gcloud sql databases delete ${{ github.event.pull_request.number }} --instance=reviwer-db
 
       - name: Notify Google Chat
         if: ${{ always() }}
