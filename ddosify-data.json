@@ -1,0 +1,33 @@
+{
+    "iteration_count": 100,
+    "load_type": "waved",
+    "duration": 10,
+    "steps": [
+      {
+        "method": "GET",
+        "url": "URL/",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      {
+        "method": "POST",
+        "url": "URL/tasks",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+           "Name": "{{_randomString}}",
+           "Status": "{{_randomString}}"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "URL/tasks",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    ]
+  }
+  
