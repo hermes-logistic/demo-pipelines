@@ -27,7 +27,6 @@ func main() {
 		// Configure the routes and run the server
 		r.CreateRoutes(d.DB)
 		r.Run()
-		break
 	case "postgres":
 		// Initialize a Database instance for PostgreSQL and connect
 		var d sql_db.Database
@@ -42,16 +41,13 @@ func main() {
 		// Configure the routes and run the server
 		r.CreateRoutes(d.DB)
 		r.Run()
-		break
 	case "local":
 		var local router.Routes
 
 		local.CreateRoutes("null")
 		local.Run()
-		break
 	default:
 		// Handle an invalid context
 		logs.Error_Logger.Fatal("Invalid Context")
-		break
 	}
 }

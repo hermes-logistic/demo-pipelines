@@ -33,7 +33,7 @@ jobs:
 
       - name: 'Create DB'
         run: |
-          gcloud sql databases create ${{ github.repository }}-${{ github.event.pull_request.head.ref }} --instance=reviwer-db
+          gcloud sql databases create ${{ github.event.pull_request.number }} --instance=reviwer-db
 
       - name: 'Build Image'
         run: |
@@ -46,7 +46,7 @@ jobs:
       
       - name: 'Deploy Image'
         run: |
-          gcloud run deploy service-${{ github.event.pull_request.number }} --image ${{ secrets.CLOUD_REGISTRY }}:test --region us-east4 --port 8080 --allow-unauthenticated --set-env-vars context=postgres,DB_STRING="host ${{ secrets.DB_HOST }} user=postgres password=${{ secrets.DB_PASSWORD }} dbname=${{ github.event.pull_request.head.ref }} port=5432 sslmode=disable" --vpc-connector vpc-connector-serverless
+          gcloud run deploy reviewer-${{ github.event.pull_request.number }} --image ${{ secrets.CLOUD_REGISTRY }}:test --region us-east4 --port 8080 --allow-unauthenticated --set-env-vars context=postgres,DB_STRING="host ${{ secrets.DB_HOST }} user=postgres password=${{ secrets.DB_PASSWORD }} dbname=${{ github.event.pull_request.head.ref }} port=5432 sslmode=disable" --vpc-connector vpc-connector-serverless
 
       - name: Set SERVICE_URL environment variable
         id: set_service_url
@@ -130,7 +130,7 @@ jobs:
       
       - name: 'Clean All'
         run: |
-          gcloud run services delete service-${{ github.event.pull_request.number }} --region us-east4 --quiet
+          gcloud run services delete reviewer-${{ github.event.pull_request.number }} --region us-east4 --quiet
 
       - name: Notify Google Chat
         if: ${{ always() }}
