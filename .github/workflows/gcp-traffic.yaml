@@ -1,0 +1,47 @@
+name: Manual Traffic
+on:
+  workflow_dispatch:
+    inputs:
+      traffic-percentage:
+        description: "percentage of traffic that will go to the green version"
+        type: string
+        required: true
+      revision-suffix:
+        description: "cloud run service revision suffix [tag deployed]"
+        type: string
+        required: true
+jobs:
+  gcp:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v2
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+      
+      - name: 'Traffic percentage'
+        run: |
+          gcloud run services update-traffic users-development --to-revisions users-development-${{ github.event.inputs.revision-suffix }}=${{ github.event.inputs.traffic-percentage }} --region=us-east4 
+
+      - name: Notify Google Chat
+        if: ${{ always() }}
+        uses: SimonScholz/google-chat-action@main
+        with:
+          webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
+          jobStatus: ${{ job.status }}
+          title: ${{ github.workflow }}
+          subtitle: ${{ github.event.pull_request.head.ref }}

@@ -1,0 +1,56 @@
+name: Deploy Users
+on: 
+  push:
+    tags:
+      - '*'
+
+jobs:
+  gcp:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v2
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+
+      - name: 'Pull Image'
+        run: |
+          gcloud auth configure-docker us-east4-docker.pkg.dev
+          docker pull ${{ secrets.CLOUD_REGISTRY }}:latest || true
+
+      - name: 'Build Image'
+        run: |
+          docker build -t ${{ secrets.CLOUD_REGISTRY }}:latest --cache-from ${{ secrets.CLOUD_REGISTRY }}:latest .
+          docker build -t ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --cache-from ${{ secrets.CLOUD_REGISTRY }}:latest .
+      
+      - name: 'Push Image'
+        run: |
+          docker push ${{ secrets.CLOUD_REGISTRY }}:latest
+          docker push ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }}
+      
+      - name: 'Deploy Image'
+        run: |
+          gcloud run deploy users-development --image ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --region us-east4 --port 8081 --revision-suffix ${{ github.ref_name }} --no-traffic
+
+      - name: Notify Google Chat
+        if: ${{ always() }}
+        uses: SimonScholz/google-chat-action@main
+        with:
+          webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
+          jobStatus: ${{ job.status }}
+          title: ${{ github.workflow }}
+          subtitle: ${{ github.event.pull_request.head.ref }}

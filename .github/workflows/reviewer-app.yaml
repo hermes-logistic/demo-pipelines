@@ -1,0 +1,95 @@
+name: 'Reviwer App'
+
+on:
+  pull_request:
+    types:
+      - opened
+      - closed
+      - synchronize
+
+jobs:
+  create-cr:
+    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v2
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+
+      - name: 'Build Image'
+        run: |
+          gcloud auth configure-docker us-east4-docker.pkg.dev
+          docker build -t ${{ secrets.CLOUD_REGISTRY }}:test --cache-from ${{ secrets.CLOUD_REGISTRY }}:test .
+      
+      - name: 'Push Image'
+        run: |
+          docker push ${{ secrets.CLOUD_REGISTRY }}:test
+      
+      - name: 'Deploy Image'
+        run: |
+          gcloud run deploy service-${{ github.event.pull_request.number }} --image ${{ secrets.CLOUD_REGISTRY }}:test --region us-east4 --port 8081 --allow-unauthenticated 
+
+      - name: Set SERVICE_URL environment variable
+        id: set_service_url
+        run: |
+          SERVICE_URL=$(gcloud run services describe service-${{ github.event.pull_request.number }} --region us-east4 --format "value(status.url)")
+          echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+          echo "::set-output name=service_url::$SERVICE_URL"
+
+      - name: Notify Google Chat
+        if: ${{ always() }}
+        uses: SimonScholz/google-chat-action@main
+        with:
+          webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
+          jobStatus: ${{ job.status }}
+          title: ${{ github.workflow }}
+          subtitle: ${{ github.event.pull_request.head.ref }}
+          additionalSections: '[{"header": "Reviewer App Access", "collapsible": true, "widgets": [{"decoratedText": {"startIcon": {"knownIcon": "STAR"},"text": "${{ steps.set_service_url.outputs.service_url }}" }}] }]'
+
+  delete-cr:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+      
+      - name: 'Clean All'
+        run: |
+          gcloud run services delete service-${{ github.event.pull_request.number }} --region us-east4 --quiet
+
+      - name: Notify Google Chat
+        if: ${{ always() }}
+        uses: SimonScholz/google-chat-action@main
+        with:
+          webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
+          jobStatus: ${{ job.status }}
+          title: ${{ github.workflow }}
+          subtitle: ${{ github.event.pull_request.head.ref }}

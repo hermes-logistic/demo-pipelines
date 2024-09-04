@@ -1,0 +1,26 @@
+name: 'Unit testing y Code Coverage'
+on: 
+  [pull_request]
+jobs:
+  code-quality:  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Unit Testing With Code Coverage
+        run: |
+          go test ./... -coverprofile=c.out
+          go tool cover -html="c.out"
+
+      - name: Notify Google Chat
+        if: ${{ always() }}
+        uses: SimonScholz/google-chat-action@main
+        with:
+          webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
+          jobStatus: ${{ job.status }}
+          title: ${{ github.workflow }}
+          subtitle: ${{ github.event.pull_request.head.ref }}
+
+
+
