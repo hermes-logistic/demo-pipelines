@@ -196,3 +196,52 @@ $ docker-compose down -v
 $ go test ./... -coverprofile=c.out
 $ go tool cover -html="c.out"
 ```
+
+## Load tests
+- go to ddsoify-data.json
+- add the new endpoint 
+  ```json
+   {
+        "id": "$ID",
+        "method": "$METHOD",
+        "url": "$URL/$ENDPOINT",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": { //add if METHOD = POST 
+           "$KEY_N": "{{_randomString}}"
+        }
+    }
+  ```
+    ### Replace the following
+     - $ID: The number of the last ID in the file plus one
+     - $METHOD: The http method of the endpoint [GET, POST, PUT, DELETE]
+     - $URL: Address of the service ej. https://api.com
+     - $ENDPOINT: Route of the endpoint ej, /tasks
+     - $KEY_N: Name of required keys
+
+#### Example
+```JSON
+{
+    "iteration_count": 100,
+    "load_type": "waved",
+    "duration": 10,
+    "steps": [
+      {
+        "id": 1,
+        "method": "POST",
+        "url": "https://api-gateway.hermesv.dev/v1/tasks",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+           "Name": "{{_randomString}}",
+           "Status": "{{_randomString}}"
+        }
+      }
+    ]
+  }
+  
+```
+
+
