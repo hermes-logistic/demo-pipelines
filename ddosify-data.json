@@ -4,6 +4,7 @@
     "duration": 10,
     "steps": [
       {
+        "id": 1,
         "method": "GET",
         "url": "URL/",
         "headers": {
@@ -11,6 +12,7 @@
         }
       },
       {
+        "id": 2,
         "method": "POST",
         "url": "URL/tasks",
         "headers": {
@@ -22,6 +24,7 @@
         }
       },
       {
+        "id": 3,
         "method": "GET",
         "url": "URL/tasks",
         "headers": {
