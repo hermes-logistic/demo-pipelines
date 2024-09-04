@@ -54,46 +54,10 @@ jobs:
         run: |
           SERVICE_URL=$(gcloud run services describe reviewer-${{ github.event.pull_request.number }} --region us-east4 --format "value(status.url)")
           echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
-          echo "::set-output name=service_url::$SERVICE_URL"
-          echo "SERVICE_URL=$SERVICE_URL" > url.txt
 
-      - name: Upload the variable file
-        uses: actions/upload-artifact@v3
-        with:
-          name: url-file
-          path: url.txt
-
-      - name: Notify Google Chat
-        if: ${{ always() }}
-        uses: SimonScholz/google-chat-action@main
-        with:
-          webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
-          jobStatus: ${{ job.status }}
-          title: ${{ github.workflow }}
-          subtitle: ${{ github.event.pull_request.head.ref }}
-          additionalSections: '[{"header": "Reviewer App Access", "collapsible": true, "widgets": [{"decoratedText": {"startIcon": {"knownIcon": "STAR"},"text": "${{ steps.set_service_url.outputs.service_url }}" }}] }]'
-
-  load-testing:
-    if: github.event.action == 'opened' || github.event.action == 'synchronize'
-    needs: create-cr
-    runs-on: ubuntu-latest
-    steps:
-      - name: code checkout
-        uses: actions/checkout@v2
-
-      - name: Download the variable file
-        uses: actions/download-artifact@v3
-        with:
-          name: url-file
-      
-      - name: Read variable from file
-        run: |
-          URL=$(cat url.txt)
-          echo "URL=${URL}" >> $GITHUB_ENV
-      
       - name: Update ddosify json
         run: |
-          sed -i.bak 's/URL/$URL/g' ddosify-data.json
+          sed -i.bak 's/URL/$SERVICE_URL/g' ddosify-data.json
 
       - name: Run load tests
         run: |
@@ -109,6 +73,7 @@ jobs:
           jobStatus: ${{ job.status }}
           title: ${{ github.workflow }}
           subtitle: ${{ github.event.pull_request.head.ref }}
+          additionalSections: '[{"header": "Reviewer App Access", "collapsible": true, "widgets": [{"decoratedText": {"startIcon": {"knownIcon": "STAR"},"text": "${{ steps.set_service_url.outputs.service_url }}" }}] }]'
 
   delete-cr:
     if: github.event.action == 'closed'
