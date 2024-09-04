@@ -70,14 +70,11 @@ func (th *TaskHandler) UpdateData(c *gin.Context) {
 
 		// If the update is successful, respond with an update confirmation
 		tasks_response_infrastructure.CreateUpdateResponse(c)
-		break
 	case *mongo.Database:
 		// If `db` is of type *mongo.Database (MongoDB), log a warning message
 		logs.Info_Logger.Println("Unsupported database")
-		break
 	default:
 		// If `db` is not of a supported type, log a warning message
 		logs.Info_Logger.Println("Unsupported database")
-		break
 	}
 }

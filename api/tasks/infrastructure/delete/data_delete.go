@@ -60,14 +60,11 @@ func (th *TaskHandler) DeleteData(c *gin.Context) {
 		}
 		// If deletion is successful, respond with a delete confirmation
 		tasks_response_infrastructure.CreateDeleteResponse(c)
-		break
 	case *mongo.Database:
 		// If `db` is of type *mongo.Database (MongoDB database), log a warning message
 		logs.Warning_Logger.Println("No support for deletion in MongoDB")
-		break
 	default:
 		// If `db` is not of a compatible type, log a warning message
 		logs.Warning_Logger.Println("Unsupported database type")
-		break
 	}
 }

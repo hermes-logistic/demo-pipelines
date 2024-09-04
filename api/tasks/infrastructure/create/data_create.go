@@ -87,7 +87,6 @@ func (th TaskHandler) CreateData(c *gin.Context) {
 
 		// If the insertion was successful, respond with a confirmation message
 		tasks_response_infrastructure.CreateConfirmResponse(c)
-		break
 	case *mongo.Database:
 		// If the database is of type *mongo.Database, create a NoSqlTask object to insert into the NoSQL database
 		insertMongo := tasks_create_db_infrastructure.NoSqlTask{
@@ -108,10 +107,8 @@ func (th TaskHandler) CreateData(c *gin.Context) {
 
 		// If the insertion was successful, respond with a confirmation message
 		tasks_response_infrastructure.CreateConfirmResponse(c)
-		break
 	default:
 		// If the database type is not supported, log an information message
 		logs.Info_Logger.Println("Unsupported database")
-		break
 	}
 }
