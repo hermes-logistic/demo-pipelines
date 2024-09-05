@@ -1,0 +1,25 @@
+name: Container Image CI
+
+on: [pull_request]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Generate tarball from image
+      run: |
+        docker build -t localbuild/testimage:latest .
+        docker save -o vuln-image.tar localbuild/testimage:latest
+
+    - name: Run Trivy vulnerability scanner in tarball mode
+      uses: aquasecurity/trivy-action@0.20.0
+      with:
+        input: /github/workspace/vuln-image.tar
+        severity: 'CRITICAL,HIGH'
+        ignore-unfixed: true
+        exit-code: '1'
+        

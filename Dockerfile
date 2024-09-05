@@ -46,6 +46,10 @@ FROM debian:11 AS release-stage
 # Set the default shell for the subsequent commands
 SHELL ["/bin/bash", "-c"]
 
+RUN apt-get update && apt-get install -y \
+    libsystemd0=247.3-7+deb11u6 \
+    libudev1=247.3-7+deb11u6
+
 # Set the working directory inside the container
 WORKDIR /
 
