@@ -3,26 +3,24 @@ name: Container Image CI
 on: [pull_request]
 
 jobs:
-  build:
+  scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
       - name: Build Docker Image
-        run: docker build -t my-app:${{ github.sha }} .
+        run: docker build . --file Dockerfile --tag my-app:latest
 
-      - name: Save Docker Image
-        run: docker save -o my-app.tar my-app:${{ github.sha }}
-
-      - name: Scan with Clair
-        uses: quay/clair-action@main
+      - name: Scan Image
+        id: scan
+        uses: sysdiglabs/scan-action@v5
         with:
-          image-path: my-app.tar
-          format: sarif
-          output: clair_results.sarif
+          image-tag: my-app:latest
+          sysdig-secure-token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
 
-      - name: Upload SARIF Report
-        uses: github/codeql-action/upload-sarif@v2
+      - name: Upload SARIF File
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: clair_results.sarif
+          sarif_file: ${{ github.workspace }}/sarif.json
