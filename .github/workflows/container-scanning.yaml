@@ -7,23 +7,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Build Docker Image
+        run: docker build -t my-app:${{ github.sha }} .
 
-      - name: Build the Container Image
-        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+      - name: Save Docker Image
+        run: docker save -o my-app.tar my-app:${{ github.sha }}
 
-      - name: Scan Image
-        uses: anchore/scan-action@v3
-        id: scan
+      - name: Scan with Clair
+        uses: quay/clair-action@main
         with:
-          image: "localbuild/testimage:latest"
-          fail-build: true
-          output-format: sarif
+          image-path: my-app.tar
+          format: sarif
+          output: clair_results.sarif
 
-      - name: Upload Anchore Scan SARIF Report
+      - name: Upload SARIF Report
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: ${{ steps.scan.outputs.sarif }}
+          sarif_file: clair_results.sarif
