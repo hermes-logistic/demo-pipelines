@@ -3,6 +3,7 @@ on:
   [pull_request]
 jobs:
   code-quality:  
+    environment: development
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code

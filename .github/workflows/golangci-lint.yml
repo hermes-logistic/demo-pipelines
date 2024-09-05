@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   golangci:
+    environment: development
     name: lint
     runs-on: ubuntu-latest
     steps:
