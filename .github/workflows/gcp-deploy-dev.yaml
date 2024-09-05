@@ -1,4 +1,4 @@
-name: Deploy Users
+name: Deploy Dev
 on: 
   push:
     tags:
@@ -45,7 +45,7 @@ jobs:
       
       - name: 'Deploy Image'
         run: |
-          gcloud run deploy ${{ secrets.SERVICE_NAME }} --image ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --region us-east4 --port 8080 --revision-suffix ${{ github.ref_name }} --no-traffic
+          gcloud run deploy ${{ secrets.SERVICE_NAME }} --image ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --region us-east4 --port 8080 --revision-suffix ${{ github.ref_name }} --no-traffic --port 8080 --allow-unauthenticated --set-env-vars context=postgres,DB_STRING="host=${{ secrets.DB_HOST }} user=${{ secrets.DB_USER }} password=${{ secrets.DB_PASSWORD }} dbname=${{ secrets.DB_NAME }}  port=5432 sslmode=disable" --vpc-connector vpc-connector-serverless
 
       - name: Notify Google Chat
         if: ${{ always() }}
