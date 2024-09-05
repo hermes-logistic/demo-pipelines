@@ -9,6 +9,7 @@ on:
 
 jobs:
   create-cr:
+    environment: development
     if: github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
     permissions:
@@ -74,6 +75,7 @@ jobs:
           additionalSections: '[{"header": "Reviewer App Access", "collapsible": true, "widgets": [{"decoratedText": {"startIcon": {"knownIcon": "STAR"},"text": "${{ steps.set_service_url.outputs.service_url }}" }}] }]'
 
   load-testing:
+    environment: development
     if: github.event.action == 'opened' || github.event.action == 'synchronize'
     needs: create-cr
     runs-on: ubuntu-latest
@@ -111,6 +113,7 @@ jobs:
           subtitle: ${{ github.event.pull_request.head.ref }}
 
   delete-cr:
+    environment: development
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     permissions:

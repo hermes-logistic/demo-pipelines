@@ -52,9 +52,6 @@ WORKDIR /
 # Copy the built executable from the previous stage to the new stage
 COPY --from=bin-stage /go-api /go-api
 
-ENV DB_STRING="host=34.48.196.243 user=postgres password=1234 dbname=backend_golang_gin port=5432 sslmode=disable"
-ENV context="local"
-
 # Expose port 8080 to the outside world
 EXPOSE 8080:8080
 
