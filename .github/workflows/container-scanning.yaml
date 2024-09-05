@@ -3,24 +3,20 @@ name: Container Image CI
 on: [pull_request]
 
 jobs:
-  scan:
-    runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Build Docker Image
-        run: docker build . --file Dockerfile --tag my-app:latest
+    - name: Generate tarball from image
+      run: |
+        docker build -t localbuild/testimage:latest .
+        docker save -o vuln-image.tar localbuild/testimage:latest
 
-      - name: Scan Image
-        id: scan
-        uses: sysdiglabs/scan-action@v5
-        with:
-          image-tag: my-app:latest
-          sysdig-secure-token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
-
-      - name: Upload SARIF File
-        if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ${{ github.workspace }}/sarif.json
+    - name: Run Trivy vulnerability scanner in tarball mode
+      uses: aquasecurity/trivy-action@0.20.0
+      with:
+        input: /github/workspace/vuln-image.tar
+        severity: 'CRITICAL,HIGH'
