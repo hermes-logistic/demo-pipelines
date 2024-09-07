@@ -1,6 +1,10 @@
 name: Container Image CI
 
-on: [workflow_call]
+on:
+  workflow_call:
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
 
 jobs:
   build:
@@ -22,4 +26,13 @@ jobs:
         severity: 'CRITICAL,HIGH'
         ignore-unfixed: true
         exit-code: '1'
+    
+    - name: Notify Google Chat
+      if: ${{ always() }}
+      uses: SimonScholz/google-chat-action@main
+      with:
+        webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
+        jobStatus: ${{ job.status }}
+        title: ${{ github.workflow }}
+        subtitle: ${{ github.event.pull_request.head.ref }}
         

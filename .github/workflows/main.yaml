@@ -7,5 +7,9 @@ on:
 jobs:
   container-scanning:
     uses: hermes-logistic/demo-pipelines/.github/workflows/container-scanning.yaml@develop
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
   code-coverage:
     uses: hermes-logistic/demo-pipelines/.github/workflows/code-coverage.yaml@develop
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}

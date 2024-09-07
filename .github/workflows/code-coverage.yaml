@@ -1,6 +1,11 @@
 name: 'Unit testing y Code Coverage'
 on: 
-  [workflow_call]
+  workflow_call:
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
+      
+
 jobs:
   code-quality:  
     runs-on: ubuntu-latest
