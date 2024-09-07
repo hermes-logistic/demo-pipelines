@@ -16,9 +16,9 @@ jobs:
       - name: Use Code Climate CLI
         run: |
           curl -L https://github.com/codeclimate/codeclimate/archive/master.tar.gz | tar xvz
-          cd codeclimate-* && sudo make install
+          cd codeclimate-* && sudo make install && pwd
           ls
-          cd .. && ls && codeclimate analyze -f html > code-quality.html
+          cd .. && pwd && codeclimate analyze -f html > code-quality.html
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3

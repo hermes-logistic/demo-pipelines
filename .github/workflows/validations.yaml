@@ -86,7 +86,7 @@ jobs:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
   
   load-testing:
-    if: github.event.action == 'closed'
+    if: github.event.action != 'closed'
     permissions:
       id-token: write
       contents: read
