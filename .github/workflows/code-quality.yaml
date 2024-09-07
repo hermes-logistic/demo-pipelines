@@ -1,6 +1,10 @@
 name: 'Code Quality With Code Climate'
-on: 
-  [workflow_call]
+
+on:
+  workflow_call:
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
 jobs:
   code-quality:  
     environment: development

@@ -21,4 +21,10 @@ jobs:
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
+  code-quality:
+    needs: [container-scanning, dependency-check]
+    uses: hermes-logistic/demo-pipelines/.github/workflows/code-quality.yaml@develop
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+
   
