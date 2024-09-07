@@ -29,6 +29,10 @@ jobs:
 
   go-lint:
     needs: [container-scanning, dependency-check]
+    permissions:
+      contents: read
+      # Optional: allow read access to pull request. Use with `only-new-issues` option.
+      pull-requests: read
     uses: hermes-logistic/demo-pipelines/.github/workflows/golangci-lint.yml@develop
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
