@@ -6,6 +6,6 @@ on:
 
 jobs:
   container-scanning:
-    uses: ./.github/workflows/container-scanning.yaml
+    uses: hermes-logistic/demo-pipelines/.github/workflows/container-scanning.yaml@develop
   code-coverage:
     uses: ./.github/workflows/code-coverage.yaml
