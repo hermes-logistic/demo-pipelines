@@ -1,12 +1,18 @@
-name: Deploy Dev
+name: Push to registry production
 on: 
-  push:
-    tags:
-      - '*-rc'
-
+  workflow_call:
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      SERVICE_ACCOUNT:
+        required: true
+      CLOUD_REGISTRY:
+        required: true
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
 jobs:
   gcp:
-    environment: development
+    environment: production
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -42,10 +48,6 @@ jobs:
         run: |
           docker push ${{ secrets.CLOUD_REGISTRY }}:latest
           docker push ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }}
-      
-      - name: 'Deploy Image'
-        run: |
-          gcloud run deploy ${{ secrets.SERVICE_NAME }} --image ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --region us-east4 --port 8080 --revision-suffix ${{ github.ref_name }} --no-traffic --port 8080 --allow-unauthenticated --set-env-vars context=postgres,DB_STRING="host=${{ secrets.DB_HOST }} user=${{ secrets.DB_USER }} password=${{ secrets.DB_PASSWORD }} dbname=${{ secrets.DB_NAME }}  port=5432 sslmode=disable" --vpc-connector vpc-connector-serverless
 
       - name: Notify Google Chat
         if: ${{ always() }}
@@ -53,5 +55,5 @@ jobs:
         with:
           webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
           jobStatus: ${{ job.status }}
-          title: ${{ github.workflow }}
+          title: 'Push to Registry'
           subtitle: ${{ github.event.pull_request.head.ref }}

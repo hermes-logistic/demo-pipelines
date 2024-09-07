@@ -1,4 +1,4 @@
-name: 'Reviwer App'
+name: 'Load Testing'
 
 on:
   workflow_call:
@@ -8,6 +8,8 @@ on:
       SERVICE_ACCOUNT:
         required: true
       GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
+      SERVICE_NAME:
         required: true
       
 jobs:

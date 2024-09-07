@@ -1,9 +1,21 @@
-name: Deploy Prod
-on: 
-  push:
-    tags:
-      - 'v[0-9]+-[0-9]+-+[0-9]+'
-
+name: Deploy Dev
+on:
+  workflow_call:
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      SERVICE_ACCOUNT:
+        required: true
+      CLOUD_REGISTRY:
+        required: true
+      DB_HOST:
+        required: true
+      DB_PASSWORD:
+        required: true
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
+      SERVICE_NAME:
+        required: true
 jobs:
   gcp:
     environment: production
@@ -27,21 +39,6 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v2'
         with:
           version: '>= 363.0.0'
-
-      - name: 'Pull Image'
-        run: |
-          gcloud auth configure-docker us-east4-docker.pkg.dev
-          docker pull ${{ secrets.CLOUD_REGISTRY }}:latest || true
-
-      - name: 'Build Image'
-        run: |
-          docker build -t ${{ secrets.CLOUD_REGISTRY }}:latest --cache-from ${{ secrets.CLOUD_REGISTRY }}:latest .
-          docker build -t ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --cache-from ${{ secrets.CLOUD_REGISTRY }}:latest .
-      
-      - name: 'Push Image'
-        run: |
-          docker push ${{ secrets.CLOUD_REGISTRY }}:latest
-          docker push ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }}
       
       - name: 'Deploy Image'
         run: |
@@ -53,5 +50,5 @@ jobs:
         with:
           webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
           jobStatus: ${{ job.status }}
-          title: ${{ github.workflow }}
+          title: 'Deploy dev'
           subtitle: ${{ github.event.pull_request.head.ref }}

@@ -40,7 +40,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: hermes-logistic/demo-pipelines/.github/workflows/gcp-registry.yaml@develop
+    uses: hermes-logistic/demo-pipelines/.github/workflows/gcp-registry-dev.yaml@develop
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
