@@ -8,4 +8,4 @@ jobs:
   container-scanning:
     uses: hermes-logistic/demo-pipelines/.github/workflows/container-scanning.yaml@develop
   code-coverage:
-    uses: ./.github/workflows/code-coverage.yaml
+    uses: hermes-logistic/demo-pipelines/.github/workflows/code-coverage.yaml@develop
