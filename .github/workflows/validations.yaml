@@ -36,7 +36,7 @@ jobs:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   registry:
-    needs: [code-covergae, code-quality, go-lint]
+    needs: [code-coverage, code-quality, go-lint]
     permissions:
       id-token: write
       contents: read
