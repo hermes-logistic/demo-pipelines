@@ -76,6 +76,9 @@ jobs:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
   
   load-testing:
+    permissions:
+      id-token: write
+      contents: read
     needs: setup-reviewer-app
     uses: hermes-logistic/demo-pipelines/.github/workflows/load-test.yaml@develop
     secrets:
