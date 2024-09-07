@@ -37,6 +37,8 @@ RUN go get -u github.com/google/uuid
 # Install packages necessary for documentation (Swagger)
 RUN go get -u github.com/swaggo/swag/cmd/swag ; go install github.com/swaggo/swag/cmd/swag@latest ; go get -u github.com/swaggo/files ; go get -u github.com/swaggo/gin-swagger ; swag init
 
+RUN go mod tidy
+
 # Build the Go application with static linking
 RUN CGO_ENABLED=0 GOOS=linux go build -o /go-api
 
