@@ -1,4 +1,5 @@
-name: Deploy Dev
+name: 'Reviwer App'
+
 on:
   workflow_call:
     secrets:
@@ -16,9 +17,10 @@ on:
         required: true
       SERVICE_NAME:
         required: true
+      
 jobs:
-  gcp:
-    environment: production
+  create-cr:
+    environment: development
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -39,10 +41,15 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v2'
         with:
           version: '>= 363.0.0'
+
+      - name: 'Create DB'
+        run: |
+          gcloud sql databases create ${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} --instance=reviwer-db
+        continue-on-error: true
       
       - name: 'Deploy Image'
         run: |
-          gcloud run deploy ${{ secrets.SERVICE_NAME }} --image ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --region us-east4 --port 8080 --revision-suffix ${{ github.ref_name }} --no-traffic --port 8080 --allow-unauthenticated --set-env-vars context=postgres,DB_STRING="host=${{ secrets.DB_HOST }} user=${{ secrets.DB_USER }} password=${{ secrets.DB_PASSWORD }} dbname=${{ secrets.DB_NAME }}  port=5432 sslmode=disable" --vpc-connector vpc-connector-serverless
+          gcloud run deploy ${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} --image ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --region us-east4 --port 8080 --allow-unauthenticated --set-env-vars context=postgres,DB_STRING="host=${{ secrets.DB_HOST }} user=postgres password=${{ secrets.DB_PASSWORD }} dbname=${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} port=5432 sslmode=disable" --vpc-connector vpc-connector-serverless
 
       - name: Notify Google Chat
         if: ${{ always() }}
@@ -50,5 +57,6 @@ jobs:
         with:
           webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
           jobStatus: ${{ job.status }}
-          title: 'Deploy dev'
+          title: 'Setup reviewer app'
           subtitle: ${{ github.event.pull_request.head.ref }}
+          additionalSections: '[{"header": "Reviewer App Access", "collapsible": true, "widgets": [{"decoratedText": {"startIcon": {"knownIcon": "STAR"},"text": "${{ steps.set_service_url.outputs.service_url }}" }}] }]'

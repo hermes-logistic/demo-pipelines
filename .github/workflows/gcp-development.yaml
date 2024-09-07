@@ -1,0 +1,31 @@
+name: Deploy Dev
+on: 
+  push:
+    tags:
+      - '*-rc'
+
+jobs:
+  registry:
+    permissions:
+      id-token: write
+      contents: read
+    uses: hermes-logistic/demo-pipelines/.github/workflows/gcp-registry-dev.yaml@develop
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+      CLOUD_REGISTRY: ${{ secrets.CLOUD_REGISTRY }}
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+  
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    uses: hermes-logistic/demo-pipelines/.github/workflows/gcp-deploy-dev.yaml@develop
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+      CLOUD_REGISTRY: '${{ secrets.CLOUD_REGISTRY }}-reviewer'
+      SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}

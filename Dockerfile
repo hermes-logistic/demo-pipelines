@@ -1,5 +1,5 @@
 # Use the official Golang image version 1.21 as the base image
-FROM golang:1.21 AS bin-stage
+FROM golang:1.23 AS bin-stage
 
 # Set the default shell for the subsequent commands
 SHELL ["/bin/bash", "-c"]
@@ -37,18 +37,13 @@ RUN go get -u github.com/google/uuid
 # Install packages necessary for documentation (Swagger)
 RUN go get -u github.com/swaggo/swag/cmd/swag ; go install github.com/swaggo/swag/cmd/swag@latest ; go get -u github.com/swaggo/files ; go get -u github.com/swaggo/gin-swagger ; swag init
 
+RUN go mod tidy
+
 # Build the Go application with static linking
 RUN CGO_ENABLED=0 GOOS=linux go build -o /go-api
 
 # Create a new stage from the debian:11 image for the release
-FROM debian:11 AS release-stage
-
-# Set the default shell for the subsequent commands
-SHELL ["/bin/bash", "-c"]
-
-RUN apt-get update && apt-get install -y \
-    libsystemd0=247.3-7+deb11u6 \
-    libudev1=247.3-7+deb11u6
+FROM alpine:latest AS release-stage
 
 # Set the working directory inside the container
 WORKDIR /

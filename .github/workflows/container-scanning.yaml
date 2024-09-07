@@ -1,9 +1,14 @@
 name: Container Image CI
 
-on: [pull_request]
+on:
+  workflow_call:
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
 
 jobs:
   build:
+    environment: development
     name: Build
     runs-on: ubuntu-20.04
     steps:
@@ -22,4 +27,13 @@ jobs:
         severity: 'CRITICAL,HIGH'
         ignore-unfixed: true
         exit-code: '1'
+    
+    - name: Notify Google Chat
+      if: ${{ always() }}
+      uses: SimonScholz/google-chat-action@main
+      with:
+        webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
+        jobStatus: ${{ job.status }}
+        title: 'Container Image CI'
+        subtitle: ${{ github.event.pull_request.head.ref }}
         
