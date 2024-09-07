@@ -9,7 +9,16 @@ jobs:
     uses: hermes-logistic/demo-pipelines/.github/workflows/container-scanning.yaml@develop
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+
+  dependency-check:
+    uses: hermes-logistic/demo-pipelines/.github/workflows/dependency-scanner.yaml@develop
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+
   code-coverage:
+    needs: [container-scanning, dependency-check]
     uses: hermes-logistic/demo-pipelines/.github/workflows/code-coverage.yaml@develop
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+
+  

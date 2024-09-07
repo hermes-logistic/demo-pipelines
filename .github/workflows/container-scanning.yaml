@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    environment: development
     name: Build
     runs-on: ubuntu-20.04
     steps:
@@ -33,6 +34,6 @@ jobs:
       with:
         webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
         jobStatus: ${{ job.status }}
-        title: ${{ github.workflow }}
+        title: 'Container Image CI'
         subtitle: ${{ github.event.pull_request.head.ref }}
         
