@@ -1,5 +1,5 @@
 # Use the official Golang image version 1.21 as the base image
-FROM golang:1.21 AS bin-stage
+FROM golang:1.23 AS bin-stage
 
 # Set the default shell for the subsequent commands
 SHELL ["/bin/bash", "-c"]
