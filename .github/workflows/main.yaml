@@ -27,4 +27,9 @@ jobs:
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
-  
+  go-lint:
+    needs: [container-scanning, dependency-check]
+    uses: hermes-logistic/demo-pipelines/.github/workflows/golanci-lint.yml@develop
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+

@@ -1,6 +1,9 @@
 name: 'Go Lint'
 on: 
-  [pull_request]
+  workflow_call:
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
 
 permissions:
   contents: read
