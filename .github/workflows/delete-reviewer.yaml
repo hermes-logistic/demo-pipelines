@@ -1,0 +1,46 @@
+name: 'Reviwer App'
+
+on:
+  workflow_call:
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      SERVICE_ACCOUNT:
+        required: true
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
+      
+jobs:
+  delete-cr:
+    environment: development
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 363.0.0'
+      
+      - name: 'Clean All'
+        run: |
+          gcloud run services delete ${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} --region us-east4 --quiet
+          gcloud sql databases delete ${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} --instance=reviwer-db
+
+      - name: Notify Google Chat
+        if: ${{ always() }}
+        uses: SimonScholz/google-chat-action@main
+        with:
+          webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
+          jobStatus: ${{ job.status }}
+          title: 'Delete reviewer app'
+          subtitle: ${{ github.event.pull_request.head.ref }}

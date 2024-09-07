@@ -32,7 +32,7 @@ jobs:
         with:
           webhookUrl: '${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}'
           jobStatus: ${{ job.status }}
-          title: ${{ github.workflow }}
+          title: 'Code quality'
           subtitle: ${{ github.event.pull_request.head.ref }}
 
 

@@ -1,8 +1,6 @@
-name: 'Github Demo CI/CD'
+name: 'Github Demo CI/CD Pull Request'
 on: 
-  push:
-    branches:
-      - develop
+  [pull_request]
 
 jobs:
   container-scanning:
@@ -37,3 +35,54 @@ jobs:
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
+  registry:
+    needs: [code-covergae, code-quality, go-lint]
+    permissions:
+      id-token: write
+      contents: read
+    uses: hermes-logistic/demo-pipelines/.github/workflows/gcp-registry.yaml@develop
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+      CLOUD_REGISTRY: '${{ secrets.CLOUD_REGISTRY }}-reviewer'
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+
+  setup-reviewer-app:
+    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+    needs: registry
+    permissions:
+      id-token: write
+      contents: read
+    uses: hermes-logistic/demo-pipelines/.github/workflows/setup-reviewer.yaml@develop
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+      CLOUD_REGISTRY: '${{ secrets.CLOUD_REGISTRY }}-reviewer'
+      SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+  
+  delete-reviewer-app:
+    if: github.event.action == 'closed'
+    permissions:
+      id-token: write
+      contents: read
+    uses: hermes-logistic/demo-pipelines/.github/workflows/delete-reviewer.yaml@develop
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+      CLOUD_REGISTRY: '${{ secrets.CLOUD_REGISTRY }}-reviewer'
+      SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+  
+  load-testing:
+    needs: setup-reviewer-app
+    uses: hermes-logistic/demo-pipelines/.github/workflows/load-test.yaml@develop
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+      SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
