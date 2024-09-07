@@ -15,10 +15,10 @@ jobs:
         
       - name: Use Code Climate CLI
         run: |
+          mkdir -p ${{ github.workspace }}/../codeclimate
           curl -L https://github.com/codeclimate/codeclimate/archive/master.tar.gz | tar xvz
-          cd codeclimate-* && sudo make install && pwd
-          ls
-          cd .. && pwd && codeclimate analyze -f html > code-quality.html
+          cd codeclimate-* && sudo make install 
+          cd ${{ github.workspace }} && pwd && codeclimate analyze -f html > code-quality.html
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
