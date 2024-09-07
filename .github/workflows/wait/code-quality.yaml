@@ -1,6 +1,6 @@
 name: 'Code Quality With Code Climate'
 on: 
-  [pull_request]
+  [workflow_call]
 jobs:
   code-quality:  
     environment: development

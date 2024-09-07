@@ -1,0 +1,11 @@
+name: 'Github Demo CI/CD'
+on: 
+  push:
+    branches:
+      - develop
+
+jobs:
+  container-scanning:
+    uses: ./.github/workflows/container-scanning.yaml
+  code-coverage:
+    uses: ./.github/workflows/code-coverage.yaml
