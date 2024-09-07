@@ -49,7 +49,7 @@ jobs:
       
       - name: 'Deploy Image'
         run: |
-          gcloud run deploy ${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} --image ${{ secrets.CLOUD_REGISTRY }}:test --region us-east4 --port 8080 --allow-unauthenticated --set-env-vars context=postgres,DB_STRING="host=${{ secrets.DB_HOST }} user=postgres password=${{ secrets.DB_PASSWORD }} dbname=${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} port=5432 sslmode=disable" --vpc-connector vpc-connector-serverless
+          gcloud run deploy ${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} --image ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --region us-east4 --port 8080 --allow-unauthenticated --set-env-vars context=postgres,DB_STRING="host=${{ secrets.DB_HOST }} user=postgres password=${{ secrets.DB_PASSWORD }} dbname=${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} port=5432 sslmode=disable" --vpc-connector vpc-connector-serverless
 
       - name: Notify Google Chat
         if: ${{ always() }}
