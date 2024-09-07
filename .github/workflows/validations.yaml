@@ -1,31 +1,40 @@
 name: 'Github Demo CI/CD Pull Request'
 on: 
-  [pull_request]
+  pull_request:
+    types:
+      - closed
+      - opened
+      - synchronize
 
 jobs:
   container-scanning:
+    if: github.event.action != 'closed'
     uses: hermes-logistic/demo-pipelines/.github/workflows/container-scanning.yaml@develop
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   dependency-check:
+    if: github.event.action != 'closed'
     uses: hermes-logistic/demo-pipelines/.github/workflows/dependency-scanner.yaml@develop
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   code-coverage:
+    if: github.event.action != 'closed'
     needs: [container-scanning, dependency-check]
     uses: hermes-logistic/demo-pipelines/.github/workflows/code-coverage.yaml@develop
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   code-quality:
+    if: github.event.action != 'closed'
     needs: [container-scanning, dependency-check]
     uses: hermes-logistic/demo-pipelines/.github/workflows/code-quality.yaml@develop
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   go-lint:
+    if: github.event.action != 'closed'
     needs: [container-scanning, dependency-check]
     permissions:
       contents: read
@@ -36,6 +45,7 @@ jobs:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   registry:
+    if: github.event.action != 'closed'
     needs: [code-coverage, code-quality, go-lint]
     permissions:
       id-token: write
@@ -48,7 +58,7 @@ jobs:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   setup-reviewer-app:
-    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+    if: github.event.action != 'closed'
     needs: registry
     permissions:
       id-token: write
