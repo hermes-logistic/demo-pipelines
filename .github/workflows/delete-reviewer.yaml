@@ -9,6 +9,8 @@ on:
         required: true
       GOOGLE_CHAT_WEBHOOK_URL:
         required: true
+      SERVICE_NAME:
+        required: true
       
 jobs:
   delete-cr:
