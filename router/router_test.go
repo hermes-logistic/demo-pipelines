@@ -33,7 +33,7 @@ func TestPrintHandler(t *testing.T) {
 	}
 
 	// Check the response body
-	expected := `{"message":"Welcome to my API with Golang v1-0-2-rc"}`
+	expected := `{"message":"Welcome to my API with Golang [tags]"}`
 
 	responseData, _ := io.ReadAll(w.Body)
 
