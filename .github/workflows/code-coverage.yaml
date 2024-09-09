@@ -31,7 +31,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: code-quality
+          name: QA Results
           path: coverage.html
 
       - name: Notify Google Chat

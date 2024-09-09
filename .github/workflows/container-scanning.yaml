@@ -33,7 +33,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: container-scanning
+        name: QA Results
         path: trivy-results.sarif
     
     - name: Notify Google Chat
