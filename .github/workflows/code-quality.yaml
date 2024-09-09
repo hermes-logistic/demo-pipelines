@@ -12,9 +12,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
         
       - name: Use Code Climate CLI
         run: |
@@ -24,7 +21,13 @@ jobs:
             --volume "$PWD":/code \
             --volume /var/run/docker.sock:/var/run/docker.sock \
             --volume /tmp/cc:/tmp/cc \
-            codeclimate/codeclimate analyze
+            codeclimate/codeclimate analyze -f html > code-quality.html
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: QA Results
+          path: code-quality.html
       
       - name: Notify Google Chat
         if: ${{ always() }}

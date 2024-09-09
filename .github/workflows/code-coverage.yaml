@@ -7,17 +7,32 @@ on:
       
 
 jobs:
-  code-quality:  
+  code-coverage:  
     runs-on: ubuntu-latest
     environment: development
     steps:
+    
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Run Unit Testing With Code Coverage
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.0'
+          check-latest: true
+          cache-dependency-path: "**/*.sum"
+
+      - name: Run tests and check coverage
         run: |
-          go test ./... -coverprofile=c.out
-          go tool cover -html="c.out"
+          go get github.com/boumenot/gocover-cobertura
+          chmod +x ./test.sh
+          ./test.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: QA Results
+          path: coverage.html
 
       - name: Notify Google Chat
         if: ${{ always() }}
