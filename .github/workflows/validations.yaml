@@ -72,6 +72,8 @@ jobs:
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+      IMAGE_TAG: ${{ github.ref_name }}
+      VPC_CONNECTOR: ${{ secrets.VPC_CONNECTOR }}
   
   delete-reviewer-app:
     if: github.event.action == 'closed'

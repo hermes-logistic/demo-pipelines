@@ -36,7 +36,7 @@ jobs:
       - name: 'Clean All'
         run: |
           gcloud run services delete ${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} --region us-east4 --quiet
-          gcloud sql databases delete ${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} --instance=reviwer-db
+          gcloud sql databases delete ${{ secrets.SERVICE_NAME }}-${{ github.event.pull_request.number }} --instance=reviwer-db --quiet
 
       - name: Notify Google Chat
         if: ${{ always() }}
