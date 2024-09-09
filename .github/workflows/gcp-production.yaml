@@ -15,11 +15,13 @@ jobs:
       SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       CLOUD_REGISTRY: ${{ secrets.CLOUD_REGISTRY }}
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-  
+      IMAGE_TAG: ${{ github.ref_name }}
+
   deploy:
     permissions:
       id-token: write
       contents: read
+    needs: registry
     uses: hermes-logistic/demo-pipelines/.github/workflows/gcp-deploy-prod.yaml@develop
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
@@ -29,3 +31,5 @@ jobs:
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+      IMAGE_TAG: ${{ github.ref_name }}
+      VPC_CONNECTOR: ${{ secrets.VPC_CONNECTOR }}

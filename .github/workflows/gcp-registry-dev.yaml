@@ -10,6 +10,8 @@ on:
         required: true
       GOOGLE_CHAT_WEBHOOK_URL:
         required: true
+      IMAGE_TAG:
+        required: true
 jobs:
   gcp:
     environment: development
@@ -42,12 +44,12 @@ jobs:
       - name: 'Build Image'
         run: |
           docker build -t ${{ secrets.CLOUD_REGISTRY }}:latest --cache-from ${{ secrets.CLOUD_REGISTRY }}:latest .
-          docker build -t ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }} --cache-from ${{ secrets.CLOUD_REGISTRY }}:latest .
+          docker build -t ${{ secrets.CLOUD_REGISTRY }}:${{ secrets.IMAGE_TAG }} --cache-from ${{ secrets.CLOUD_REGISTRY }}:latest .
       
       - name: 'Push Image'
         run: |
           docker push ${{ secrets.CLOUD_REGISTRY }}:latest
-          docker push ${{ secrets.CLOUD_REGISTRY }}:${{ github.sha }}
+          docker push ${{ secrets.CLOUD_REGISTRY }}:${{ secrets.IMAGE_TAG }}
 
       - name: Notify Google Chat
         if: ${{ always() }}
