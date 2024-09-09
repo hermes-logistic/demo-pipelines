@@ -24,8 +24,15 @@ jobs:
 
       - name: Run tests and check coverage
         run: |
+          go get github.com/boumenot/gocover-cobertura
           chmod +x ./test.sh
           ./test.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-quality
+          path: coverage.html
 
       - name: Notify Google Chat
         if: ${{ always() }}

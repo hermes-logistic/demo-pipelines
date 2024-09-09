@@ -27,6 +27,14 @@ jobs:
         severity: 'CRITICAL,HIGH'
         ignore-unfixed: true
         exit-code: '1'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: container-scanning
+        path: trivy-results.sarif
     
     - name: Notify Google Chat
       if: ${{ always() }}
