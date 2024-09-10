@@ -33,7 +33,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: QA Results | container scanning
+        name: QA Results ${{ github.run_id }}.${{ github.run_number }}
         path: trivy-results.sarif
     
     - name: Notify Google Chat
