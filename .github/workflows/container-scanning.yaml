@@ -34,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: container scanning
-        path: trivy-results-${{ github.run_id }}-${{ github.run_number }}.sarif\
+        path: trivy-results-${{ github.run_id }}-${{ github.run_number }}.sarif
         if-no-files-found: ignore
     
     - name: Notify Google Chat
