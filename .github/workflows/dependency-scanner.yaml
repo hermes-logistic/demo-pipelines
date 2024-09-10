@@ -30,13 +30,6 @@ jobs:
           output-format: text
           output-file: vuln-check-1.txt
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ github.head_ref }}-${{ github.event.pull_request.number }}
-          path: vuln-check.txt
-          overwrite: true
-      
       - name: Notify Google Chat
         if: ${{ always() }}
         uses: SimonScholz/google-chat-action@main
