@@ -34,9 +34,9 @@ jobs:
           output-file: vuln-check.txt
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.head_ref }}-${{ github.event.pull_request.number }}
+          name: QA Results
           path: vuln-check.txt
       
       - name: Notify Google Chat

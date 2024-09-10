@@ -26,7 +26,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.head_ref }}-${{ github.event.pull_request.number }}
+          name: QA Results
           path: code-quality.html
       
       - name: Notify Google Chat
@@ -37,7 +37,3 @@ jobs:
           jobStatus: ${{ job.status }}
           title: 'Code quality'
           subtitle: ${{ github.event.pull_request.head.ref }}
-
-
-
-

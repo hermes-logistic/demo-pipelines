@@ -21,7 +21,7 @@ jobs:
       contents: read
     steps:
       - name: code checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -53,9 +53,9 @@ jobs:
           echo $LOAD_RESULTS > load-testing-results.txt
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.head_ref }}-${{ github.event.pull_request.number }}
+          name: QA Results
           path: load-testing-results.txt
 
       - name: Notify Google Chat

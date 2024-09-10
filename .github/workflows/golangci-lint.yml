@@ -32,9 +32,9 @@ jobs:
           args: --timeout=30m > golangci-lint-output.txt
 
       - name: Upload golangci-lint output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.head_ref }}-${{ github.event.pull_request.number }}
+          name: QA Results
           path: golangci-lint-output.txt
                 
       - name: Notify Google Chat
