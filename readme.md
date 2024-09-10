@@ -199,26 +199,24 @@ $ go tool cover -html="c.out"
 
 ## Load tests
 - go to ddsoify-data.json
+- create a file with the structure of the petition [POST only] in the payload directory
 - add the new endpoint 
   ```json
-   {
+    {
         "id": "$ID",
         "method": "$METHOD",
         "url": "$URL/$ENDPOINT",
         "headers": {
           "Content-Type": "application/json"
         },
-        "body": { //add if METHOD = POST 
-           "$KEY_N": "{{_randomString}}"
-        }
+        "payload_file": "./payload/$ENDPOINT.json"
     }
   ```
     ### Replace the following
      - $ID: The number of the last ID in the file plus one
      - $METHOD: The http method of the endpoint [GET, POST, PUT, DELETE]
      - $URL: Address of the service ej. https://api.com
-     - $ENDPOINT: Route of the endpoint ej, /tasks
-     - $KEY_N: Name of required keys
+     - $ENDPOINT: Route of the endpoint ej, tasks
 
 #### Example
 ```JSON
@@ -234,14 +232,18 @@ $ go tool cover -html="c.out"
         "headers": {
           "Content-Type": "application/json"
         },
-        "body": {
-           "Name": "{{_randomString}}",
-           "Status": "{{_randomString}}"
-        }
+        "payload_file": "./payload/tasks.json"
       }
     ]
-  }
+}
   
 ```
+#### ./payload/ENDPOINT.json Example
+```json
 
+{
+    "Name": "{{_randomString}}",
+    "Status": "{{_randomString}}"
+}
 
+```
