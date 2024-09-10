@@ -32,10 +32,12 @@ jobs:
           args: --timeout=30m > golangci-lint-output-${{ github.run_id }}-${{ github.run_number }}.txt
 
       - name: Upload golangci-lint output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: QA Results_${{ github.run_id }}-${{ github.run_number }}
           path: golangci-lint-output-${{ github.run_id }}-${{ github.run_number }}.txt
+          if-no-files-found: ignore
+          overwrite: true
                 
       - name: Notify Google Chat
         if: ${{ always() }}

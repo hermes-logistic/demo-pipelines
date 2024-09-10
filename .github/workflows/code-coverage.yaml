@@ -30,10 +30,12 @@ jobs:
           go tool cover -html=coverage.out -o coverage-${{ github.run_id }}-${{ github.run_number }}.html
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: QA Results_${{ github.run_id }}-${{ github.run_number }}
           path: coverage-${{ github.run_id }}-${{ github.run_number }}.html
+          if-no-files-found: ignore
+          overwrite: true
 
       - name: Notify Google Chat
         if: ${{ always() }}
