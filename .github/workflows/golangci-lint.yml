@@ -34,7 +34,7 @@ jobs:
       - name: Upload golangci-lint output
         uses: actions/upload-artifact@v3
         with:
-          name: QA Results ${{ github.run_id }}.${{ github.run_number }}
+          name: QA Results
           path: golangci-lint-output.txt
                 
       - name: Notify Google Chat
