@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: code checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -51,7 +53,7 @@ jobs:
           sudo dpkg -i ddosify_amd64.deb
           export LOAD_RESULTS=$(ddosify -config ddosify-data.json)
           echo $LOAD_RESULTS > load-testing-results.txt
-          
+
       - name: Notify Google Chat
         if: ${{ always() }}
         uses: SimonScholz/google-chat-action@main

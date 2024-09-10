@@ -29,7 +29,9 @@ jobs:
       contents: read
     steps:
       - name: code checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
