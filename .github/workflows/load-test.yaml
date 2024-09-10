@@ -53,7 +53,7 @@ jobs:
           echo $LOAD_RESULTS > load-testing-results.txt
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: QA Results ${{ github.run_id }}.${{ github.run_number }}
           path: load-testing-results.txt

@@ -29,7 +29,7 @@ jobs:
           ./test.sh
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: QA Results ${{ github.run_id }}.${{ github.run_number }}
           path: coverage.html
