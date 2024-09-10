@@ -53,7 +53,7 @@ jobs:
           echo $LOAD_RESULTS > load-testing-results.txt
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: QA Results
           path: load-testing-results.txt

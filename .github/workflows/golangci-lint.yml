@@ -32,7 +32,7 @@ jobs:
           args: --timeout=30m > golangci-lint-output.txt
 
       - name: Upload golangci-lint output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: QA Results
           path: golangci-lint-output.txt
