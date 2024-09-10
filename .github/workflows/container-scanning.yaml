@@ -36,7 +36,6 @@ jobs:
         name: QA Results_${{ github.run_id }}-${{ github.run_number }}
         path: trivy-results-${{ github.run_id }}-${{ github.run_number }}.sarif\
         if-no-files-found: ignore
-        overwrite: true
     
     - name: Notify Google Chat
       if: ${{ always() }}

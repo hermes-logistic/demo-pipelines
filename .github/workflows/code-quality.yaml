@@ -28,7 +28,6 @@ jobs:
         with:
           name: QA Results_${{ github.run_id }}-${{ github.run_number }}
           path: code-quality-${{ github.run_id }}-${{ github.run_number }}.html
-          if-no-files-found: ignore
           overwrite: true
       
       - name: Notify Google Chat

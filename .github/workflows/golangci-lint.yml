@@ -37,8 +37,7 @@ jobs:
           name: QA Results_${{ github.run_id }}-${{ github.run_number }}
           path: golangci-lint-output-${{ github.run_id }}-${{ github.run_number }}.txt
           if-no-files-found: ignore
-          overwrite: true
-                
+                          
       - name: Notify Google Chat
         if: ${{ always() }}
         uses: SimonScholz/google-chat-action@main
