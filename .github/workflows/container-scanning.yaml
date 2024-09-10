@@ -28,13 +28,13 @@ jobs:
         ignore-unfixed: true
         exit-code: '1'
         format: 'sarif'
-        output: 'trivy-results.sarif'
+        output: 'trivy-results-${{ github.run_id }}-${{ github.run_number }}.sarif'
     
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: QA Results
-        path: trivy-results.sarif
+        name: QA Results | ${{ github.run_id }}-${{ github.run_number }}
+        path: trivy-results-${{ github.run_id }}-${{ github.run_number }}.sarif
     
     - name: Notify Google Chat
       if: ${{ always() }}

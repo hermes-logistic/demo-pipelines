@@ -21,13 +21,13 @@ jobs:
             --volume "$PWD":/code \
             --volume /var/run/docker.sock:/var/run/docker.sock \
             --volume /tmp/cc:/tmp/cc \
-            codeclimate/codeclimate analyze -f html > code-quality.html
+            codeclimate/codeclimate analyze -f html > code-quality-${{ github.run_id }}-${{ github.run_number }}.html
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: QA Results
-          path: code-quality.html
+          name: QA Results | ${{ github.run_id }}-${{ github.run_number }}
+          path: code-quality-${{ github.run_id }}-${{ github.run_number }}.html
       
       - name: Notify Google Chat
         if: ${{ always() }}

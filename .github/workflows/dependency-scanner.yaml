@@ -31,13 +31,13 @@ jobs:
           go-version-input: 1.23.0
           go-package: ./...
           output-format: text
-          output-file: vuln-check.txt
+          output-file: vuln-check-${{ github.run_id }}-${{ github.run_number }}.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: QA Results
-          path: vuln-check.txt
+          name: QA Results | ${{ github.run_id }}-${{ github.run_number }}
+          path: vuln-check-${{ github.run_id }}-${{ github.run_number }}.txt
       
       - name: Notify Google Chat
         if: ${{ always() }}

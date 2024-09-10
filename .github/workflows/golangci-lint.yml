@@ -29,13 +29,13 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.60
-          args: --timeout=30m > golangci-lint-output.txt
+          args: --timeout=30m > golangci-lint-output-${{ github.run_id }}-${{ github.run_number }}.txt
 
       - name: Upload golangci-lint output
         uses: actions/upload-artifact@v3
         with:
-          name: QA Results
-          path: golangci-lint-output.txt
+          name: QA Results | ${{ github.run_id }}-${{ github.run_number }}
+          path: golangci-lint-output-${{ github.run_id }}-${{ github.run_number }}.txt
                 
       - name: Notify Google Chat
         if: ${{ always() }}
