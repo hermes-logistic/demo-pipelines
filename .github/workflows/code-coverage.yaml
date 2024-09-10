@@ -29,9 +29,9 @@ jobs:
           ./test.sh
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.head_ref }}-${{ github.event.pull_request.number }}
+          name: QA Results
           path: coverage.html
 
       - name: Notify Google Chat
@@ -42,6 +42,3 @@ jobs:
           jobStatus: ${{ job.status }}
           title: 'Unit testing y Code Coverage'
           subtitle: ${{ github.event.pull_request.head.ref }}
-
-
-
