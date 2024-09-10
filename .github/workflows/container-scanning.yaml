@@ -14,8 +14,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        ref: ${{ github.head_ref }}
 
     - name: Generate tarball from image
       run: |
@@ -30,7 +28,14 @@ jobs:
         ignore-unfixed: true
         exit-code: '1'
         format: 'sarif'
-        output: 'trivy-results.sarif'
+        output: 'trivy-results-${{ github.run_id }}-${{ github.run_number }}.sarif'
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: container scanning
+        path: trivy-results-${{ github.run_id }}-${{ github.run_number }}.sarif
+        if-no-files-found: ignore
     
     - name: Notify Google Chat
       if: ${{ always() }}

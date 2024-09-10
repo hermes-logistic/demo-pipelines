@@ -22,12 +22,10 @@ jobs:
     steps:
       - name: code checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
+        uses: 'google-github-actions/auth@v2'
         with:
           create_credentials_file: true
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
@@ -52,7 +50,14 @@ jobs:
           wget https://github.com/ddosify/ddosify/releases/download/v1.0.6/ddosify_amd64.deb
           sudo dpkg -i ddosify_amd64.deb
           export LOAD_RESULTS=$(ddosify -config ddosify-data.json)
-          echo $LOAD_RESULTS > load-testing-results.txt
+          echo $LOAD_RESULTS > load-testing-results-${{ github.run_id }}-${{ github.run_number }}.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Load testing
+          path: load-testing-results-${{ github.run_id }}-${{ github.run_number }}.txt
+          if-no-files-found: ignore
 
       - name: Notify Google Chat
         if: ${{ always() }}

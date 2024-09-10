@@ -17,9 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-
+      
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -31,8 +29,15 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.60
-          args: --timeout=30m > golangci-lint-output.txt
-                
+          args: --timeout=30m > golangci-lint-output-${{ github.run_id }}-${{ github.run_number }}.txt
+
+      - name: Upload golangci-lint output
+        uses: actions/upload-artifact@v4
+        with:
+          name: Go Lint
+          path: golangci-lint-output-${{ github.run_id }}-${{ github.run_number }}.txt
+          if-no-files-found: ignore
+
       - name: Notify Google Chat
         if: ${{ always() }}
         uses: SimonScholz/google-chat-action@main
