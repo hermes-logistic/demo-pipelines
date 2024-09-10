@@ -32,7 +32,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: QA Results_${{ github.run_id }}-${{ github.run_number }}
+          name: code coverage
           path: coverage-${{ github.run_id }}-${{ github.run_number }}.html
           overwrite: true
 
