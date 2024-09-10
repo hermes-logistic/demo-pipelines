@@ -28,6 +28,7 @@ jobs:
         with:
           name: QA Results
           path: code-quality.html
+          overwrite: true
       
       - name: Notify Google Chat
         if: ${{ always() }}

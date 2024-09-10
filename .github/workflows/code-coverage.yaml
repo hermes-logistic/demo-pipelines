@@ -33,6 +33,7 @@ jobs:
         with:
           name: QA Results
           path: coverage.html
+          overwrite: true
 
       - name: Notify Google Chat
         if: ${{ always() }}

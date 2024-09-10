@@ -35,6 +35,7 @@ jobs:
         with:
           name: QA Results
           path: vuln-check.txt
+          overwrite: true
       
       - name: Notify Google Chat
         if: ${{ always() }}

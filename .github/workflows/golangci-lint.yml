@@ -36,6 +36,7 @@ jobs:
         with:
           name: QA Results
           path: golangci-lint-output.txt
+          overwrite: true
                 
       - name: Notify Google Chat
         if: ${{ always() }}
