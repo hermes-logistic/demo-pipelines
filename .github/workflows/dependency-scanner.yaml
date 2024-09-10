@@ -33,7 +33,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: QA Results
+          name: ${{ github.head_ref }}-${{ github.event.pull_request.number }}
           path: vuln-check.txt
           overwrite: true
       
