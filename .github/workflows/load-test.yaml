@@ -21,7 +21,7 @@ jobs:
       contents: read
     steps:
       - name: code checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -50,13 +50,14 @@ jobs:
           wget https://github.com/ddosify/ddosify/releases/download/v1.0.6/ddosify_amd64.deb
           sudo dpkg -i ddosify_amd64.deb
           export LOAD_RESULTS=$(ddosify -config ddosify-data.json)
-          echo $LOAD_RESULTS > load-testing-results.txt
+          echo $LOAD_RESULTS > load-testing-results-${{ github.run_id }}-${{ github.run_number }}.txt
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: QA Results
-          path: load-testing-results.txt
+          name: Load testing
+          path: load-testing-results-${{ github.run_id }}-${{ github.run_number }}.txt
+          if-no-files-found: ignore
 
       - name: Notify Google Chat
         if: ${{ always() }}

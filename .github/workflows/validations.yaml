@@ -9,27 +9,27 @@ on:
 jobs:
   container-scanning:
     if: github.event.action != 'closed'
-    uses: hermes-logistic/demo-pipelines/.github/workflows/container-scanning.yaml@develop
+    uses: ./.github/workflows/container-scanning.yaml
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   dependency-check:
     if: github.event.action != 'closed'
-    uses: hermes-logistic/demo-pipelines/.github/workflows/dependency-scanner.yaml@develop
+    uses: ./.github/workflows/dependency-scanner.yaml
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   code-coverage:
     if: github.event.action != 'closed'
     needs: [container-scanning, dependency-check]
-    uses: hermes-logistic/demo-pipelines/.github/workflows/code-coverage.yaml@develop
+    uses: ./.github/workflows/code-coverage.yaml
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
   code-quality:
     if: github.event.action != 'closed'
     needs: [container-scanning, dependency-check]
-    uses: hermes-logistic/demo-pipelines/.github/workflows/code-quality.yaml@develop
+    uses: ./.github/workflows/code-quality.yaml
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
@@ -40,7 +40,7 @@ jobs:
       contents: read
       # Optional: allow read access to pull request. Use with `only-new-issues` option.
       pull-requests: read
-    uses: hermes-logistic/demo-pipelines/.github/workflows/golangci-lint.yml@develop
+    uses: ./.github/workflows/golangci-lint.yml
     secrets:
       GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
@@ -50,7 +50,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: hermes-logistic/demo-pipelines/.github/workflows/gcp-registry-dev.yaml@develop
+    uses: ./.github/workflows/gcp-registry-dev.yaml
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
@@ -64,7 +64,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: hermes-logistic/demo-pipelines/.github/workflows/setup-reviewer.yaml@develop
+    uses: ./.github/workflows/setup-reviewer.yaml
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
@@ -81,7 +81,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: hermes-logistic/demo-pipelines/.github/workflows/delete-reviewer.yaml@develop
+    uses: ./.github/workflows/delete-reviewer.yaml
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
@@ -94,7 +94,7 @@ jobs:
       id-token: write
       contents: read
     needs: setup-reviewer-app
-    uses: hermes-logistic/demo-pipelines/.github/workflows/load-test.yaml@develop
+    uses: ./.github/workflows/load-test.yaml
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}

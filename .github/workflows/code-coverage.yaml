@@ -27,12 +27,14 @@ jobs:
           go get github.com/boumenot/gocover-cobertura
           chmod +x ./test.sh
           ./test.sh
+          go tool cover -html=coverage.out -o coverage-${{ github.run_id }}-${{ github.run_number }}.html
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: QA Results
-          path: coverage.html
+          name: code coverage
+          path: coverage-${{ github.run_id }}-${{ github.run_number }}.html
+          overwrite: true
 
       - name: Notify Google Chat
         if: ${{ always() }}
@@ -42,6 +44,3 @@ jobs:
           jobStatus: ${{ job.status }}
           title: 'Unit testing y Code Coverage'
           subtitle: ${{ github.event.pull_request.head.ref }}
-
-
-
