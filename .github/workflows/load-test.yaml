@@ -55,7 +55,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: QA Results | ${{ github.run_id }}-${{ github.run_number }}
+          name: QA Results_${{ github.run_id }}-${{ github.run_number }}
           path: load-testing-results-${{ github.run_id }}-${{ github.run_number }}.txt
 
       - name: Notify Google Chat
