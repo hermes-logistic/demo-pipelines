@@ -154,7 +154,7 @@ Contains the api routes, in file router_main.go put the general routes, create a
 
 ## Container Operative System
 
-Debian-11
+Alpine
 
 ## How to use
 

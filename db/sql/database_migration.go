@@ -2,6 +2,7 @@ package sql_db
 
 import (
 	tasks_create_db_infrastructure "go-api/api/tasks/infrastructure/create/db"
+	users_create_db_infrastructure "go-api/api/users/infrastructure/create/db"
 	"go-api/logs"
 )
 
@@ -16,6 +17,14 @@ func (d *Database) Migration() {
 	if err != nil {
 		// In case of error, log the error in the error logger and return
 		logs.Error_Logger.Println("Error migrating tasks table", err)
+		return
+	}
+
+	errUsers := db.AutoMigrate(&users_create_db_infrastructure.SqlUser{})
+
+	if errUsers != nil {
+		// In case of error, log the error in the error logger and return
+		logs.Error_Logger.Println("Error migrating users table", err)
 		return
 	}
 
