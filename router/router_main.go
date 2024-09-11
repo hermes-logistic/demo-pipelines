@@ -33,6 +33,8 @@ func (r *Routes) CreateRoutes(db interface{}) {
 	// Configure specific tasks routes using the TasksRoutes method
 	r.TasksRoutes(router, db)
 
+	r.UsersRoutes(router, db)
+
 	// Assign the configured router to the Routes structure
 	r.Routes = router
 }
@@ -47,5 +49,5 @@ func (r *Routes) Run() {
 
 // Print is a handler for the root route that responds with a JSON message.
 func (r *Routes) Print(gc *gin.Context) {
-	gc.JSON(http.StatusOK, gin.H{"message": "Welcome to my API with Golang v1-0-2-rc"})
+	gc.JSON(http.StatusOK, gin.H{"message": "Welcome to my API with Golang"})
 }

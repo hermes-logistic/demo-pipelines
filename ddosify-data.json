@@ -18,7 +18,7 @@
         "headers": {
           "Content-Type": "application/json"
         },
-        "payload_file": "./payload.json"
+        "payload_file": "./payload/tasks.json"
       },
       {
         "id": 3,
@@ -27,6 +27,15 @@
         "headers": {
           "Content-Type": "application/json"
         }
+      },
+      {
+        "id": 4,
+        "method": "POST",
+        "url": "URL/users",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "payload_file": "./payload/users.json"
       }
     ]
   }
