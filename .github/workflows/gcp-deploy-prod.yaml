@@ -20,6 +20,8 @@ on:
         required: true
       VPC_CONNECTOR:
         required: true
+      DB_NAME:
+        required: true
 jobs:
   gcp:
     environment: production
