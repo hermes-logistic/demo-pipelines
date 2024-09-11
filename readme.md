@@ -15,56 +15,103 @@
 | bash | ~> 5.1.4 |
 
 ## Project Structure
-- api
-    - entities [users, tasks, comments, etc]
-        - entity_application
-            - entity_validations
-                - validation.go
-        - entity_domain
-            - entity.go
-            - entity_interface.go
-        - entity_infrastructure
-            - entity_create
-                - db
-                    - db_context_create.go
-                - entity_create.go
-            - entity_delete
-                - db
-                    - db_context_delete.go
-                - entity_delete.go
-            - entity_ read
-                - db
-                    - db_context_read.go
-                - entity_read.go
-            - entity_ response
-                - create_response.go
-                - delete_response.go
-                - read_response.go
-                - update_response.go
-            - entiity_update
-                - db
-                    - db_context_delete.go
-                - entity_delete.go
-- db
-    - database context [mongodb, postgres, elasticsearch, etc]
-        - database_connection.go
-        - database_main.go
-- helpers
-    - helper
-        - helper_main.go 
-- logs
-    - logs_main.go
-- router
-    - router_main.go
-    - router_entity.go
-- .gitignore
-- .dockerignore
-- .env
-- docker-compose.yml
-- Dockerfile
-- main.go
-- readme.md
-
+```sh
+.
+├── api
+│   ├── tasks
+│   │   ├── application
+│   │   │   └── empty
+│   │   │       ├── empty_test.go
+│   │   │       └── empty_validation.go
+│   │   ├── domain
+│   │   │   ├── tasks.go
+│   │   │   └── tasks_interface.go
+│   │   └── infrastructure
+│   │       ├── create
+│   │       │   ├── data_create.go
+│   │       │   ├── data_test.go
+│   │       │   └── db
+│   │       │       ├── db_mongo_insert.go
+│   │       │       ├── db_sql_insert.go
+│   │       │       ├── db_structs.go
+│   │       │       └── db_test.go
+│   │       ├── delete
+│   │       │   ├── data_delete.go
+│   │       │   └── db
+│   │       │       └── db_sql_delete.go
+│   │       ├── read
+│   │       │   ├── data_read.go
+│   │       │   └── db
+│   │       │       ├── db_mongo_read.go
+│   │       │       └── db_sql_read.go
+│   │       ├── response
+│   │       │   ├── create_response.go
+│   │       │   ├── delete_response.go
+│   │       │   ├── read_response.go
+│   │       │   └── update_response.go
+│   │       └── update
+│   │           ├── data_update.go
+│   │           └── db
+│   │               └── db_sql_update.go
+│   └── users
+│       ├── application
+│       │   └── empty
+│       │       └── empty_validation.go
+│       ├── domain
+│       │   ├── users.go
+│       │   └── users_interface.go
+│       └── infrastructure
+│           ├── create
+│           │   ├── data_create.go
+│           │   └── db
+│           │       ├── db_sql_insert.go
+│           │       └── db_structs.go
+│           ├── delete
+│           ├── read
+│           ├── response
+│           │   ├── create_response.go
+│           │   ├── delete_response.go
+│           │   └── update_response.go
+│           └── update
+├── db
+│   ├── mongodb
+│   │   ├── database_connection.go
+│   │   └── database_main.go
+│   └── sql
+│       ├── database_connection.go
+│       ├── database_main.go
+│       └── database_migration.go
+├── ddosify-data.json
+├── docker-compose.yml
+├── Dockerfile
+├── dockerfile.develop
+├── docs
+│   ├── docs.go
+│   ├── swagger.json
+│   └── swagger.yaml
+├── go.mod
+├── go.sum
+├── helpers
+│   └── structs
+│       └── structs_main.go
+├── logs
+│   └── logs_main.go
+├── main.go
+├── payload
+│   ├── tasks.json
+│   └── users.json
+├── pkg
+│   └── mod
+│       └── cache
+│           └── lock
+├── readme.md
+├── router
+│   ├── router_main.go
+│   ├── router_task.go
+│   ├── router_test.go
+│   └── router_users.go
+└── test.sh
+```
 ### main 
 
 - .gitignore: determine which files and directories to ignore in your Git repository
