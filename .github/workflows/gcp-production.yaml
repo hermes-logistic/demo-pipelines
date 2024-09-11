@@ -26,7 +26,7 @@ jobs:
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
-      CLOUD_REGISTRY: '${{ secrets.CLOUD_REGISTRY }}-reviewer'
+      CLOUD_REGISTRY: '${{ secrets.CLOUD_REGISTRY }}'
       SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
