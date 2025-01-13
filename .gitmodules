@@ -1,0 +1,3 @@
+[submodule "go-api"]
+	path = go-api
+	url = git@github-hermes:hermes-logistic/go-api.git
