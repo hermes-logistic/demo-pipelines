@@ -1,0 +1,109 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - n8n
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'push' && github.ref == 'refs/heads/n8n'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.20
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.60
+          args: --timeout=30m
+
+  container_scanning:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'push' && github.ref == 'refs/heads/n8n'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build Docker image
+        run: docker build -t localbuild/n8n:latest .
+      - name: Save Docker image
+        run: docker save localbuild/n8n:latest > n8n.tar
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          input: n8n.tar
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: sarif
+          output: trivy_report.sarif
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy-scan
+          path: trivy_report.sarif
+
+  unit_tests:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'push' && github.ref == 'refs/heads/n8n'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.20
+      - name: Run unit tests
+        run: go test ./...
+
+  code_coverage:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'push' && github.ref == 'refs/heads/n8n'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.20
+      - name: Run code coverage
+        run: go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out -o coverage.html
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage
+          path: coverage.html
+
+  docker_build_push:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          create_credentials_file: true
+          workload_identity_provider: 'projects/957681779883/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'n8n-test@hermes-development-01.iam.gserviceaccount.com'
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: '>= 363.0.0'
+          project: 'hermes-development-01'
+      - name: Build and push Docker image
+        run: | 
+          gcloud auth configure-docker
+          docker build -t us-east4-docker.pkg.dev/hermes-development-01/demo/n8n:latest .
+          docker push us-east4-docker.pkg.dev/hermes-development-01/demo/n8n:latest
+
